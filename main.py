@@ -130,6 +130,9 @@ def main():
         validate(val_loader, model, criterion)
         return
 
+    # Record start time for training all epochs
+    training_start_time = time.time()
+    
     for epoch in range(args.start_epoch, args.epochs):
         adjust_learning_rate(optimizer, epoch)
 
@@ -147,6 +150,14 @@ def main():
             'state_dict': model.state_dict(),
             'best_prec1': best_prec1,
         }, is_best, filename=os.path.join(args.save_dir, 'checkpoint_{}.tar'.format(epoch)))
+
+    # Calculate and print total training time
+    training_end_time = time.time()
+    total_training_time = training_end_time - training_start_time
+    hours = int(total_training_time // 3600)
+    minutes = int((total_training_time % 3600) // 60)
+    seconds = total_training_time % 60
+    print(f'\nTotal training time: {hours:02d}:{minutes:02d}:{seconds:06.3f} ({total_training_time:.3f} seconds)')
 
 
 def train(train_loader, model, criterion, optimizer, epoch):
